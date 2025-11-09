@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  mcp-server-template:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MCP_HTTP_HOST=0.0.0.0
+      - MCP_HTTP_PORT=8000
+      - MCP_HTTP_PATH=/mcp
+      - MCP_SNIPPETS_ROOT=/data
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

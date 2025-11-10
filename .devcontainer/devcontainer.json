@@ -15,7 +15,7 @@
     }
   },
 
-  "postStartCommand": "bash .devcontainer/postStart.sh && bash .devcontainer/expose-port.sh",
+  "postStartCommand": "bash .devcontainer/postStart.sh && bash .devcontainer/expose-port.sh && bash start.sh",
 
   "customizations": {
     "vscode": {

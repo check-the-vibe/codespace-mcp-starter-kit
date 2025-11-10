@@ -36,14 +36,6 @@ if __name__ == "__main__":
     try:
         _run_uvicorn()
     except Exception:
-        print("Failed to start uvicorn/app — falling back to mcp.run if available.\n")
+        print("Failed to start uvicorn/app — please ensure uvicorn is installed and app.py is present.")
         traceback.print_exc()
-        try:
-            from server import mcp
-
-            print("Attempting fallback: mcp.run(transport='streamable-http')")
-            mcp.run(transport="streamable-http")
-        except Exception:
-            print("Fallback failed. Please ensure uvicorn is installed and app.py is present.")
-            traceback.print_exc()
-            raise
+        raise

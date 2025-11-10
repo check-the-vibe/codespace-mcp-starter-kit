@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[devcontainer] postStart: ensuring MCP Content Library is bootstrapped and running"
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+# Non-interactive bootstrap (creates .venv and installs deps)
+if [ -f "./bootstrap.sh" ]; then
+  echo "[devcontainer] Running bootstrap (non-interactive)"
+  bash ./bootstrap.sh --non-interactive || true
+fi
+
+# Activate venv if present
+if [ -f ".venv/bin/activate" ]; then
+  # shellcheck disable=SC1091
+  source .venv/bin/activate
+fi
+
+# storage directory not required for template devcontainer
+
+# Start server in background if not already running
+PID_FILE="/tmp/mcp_server.pid"
+LOG_FILE="/tmp/mcp_server.log"
+
+is_running() {
+  if [ -f "$PID_FILE" ]; then
+    pid=$(cat "$PID_FILE")
+    if kill -0 "$pid" 2>/dev/null; then
+      return 0
+    else
+      return 1
+    fi
+  fi
+  return 1
+}
+
+if is_running; then
+  echo "[devcontainer] MCP server already running (pid $(cat "$PID_FILE"))"
+  exit 0
+fi
+
+HOST="${MCP_HTTP_HOST:-0.0.0.0}"
+PORT="${MCP_HTTP_PORT:-8000}"
+
+echo "[devcontainer] Starting MCP server on $HOST:$PORT"
+
+# Start via the project's python entrypoint so our server_http runner is used
+# Use nohup to keep it running in background across sessions in Codespaces
+nohup ${ROOT_DIR}/.venv/bin/python ${ROOT_DIR}/server_http.py > "$LOG_FILE" 2>&1 &
+echo $! > "$PID_FILE"
+
+echo "[devcontainer] MCP server started (pid $(cat "$PID_FILE")); logs: $LOG_FILE"
+
+# Wait for server to be healthy before making port public
+echo "[devcontainer] Waiting for server to be ready..."
+MAX_ATTEMPTS=30
+ATTEMPT=0
+while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+  if curl -fsS http://localhost:$PORT/health > /dev/null 2>&1; then
+    echo "[devcontainer] ✓ Server is healthy!"
+    break
+  fi
+  ATTEMPT=$((ATTEMPT + 1))
+  echo "[devcontainer] Health check attempt $ATTEMPT/$MAX_ATTEMPTS..."
+  sleep 1
+done
+
+if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+  echo "[devcontainer] ⚠ Server health check timeout after ${MAX_ATTEMPTS}s"
+else
+  echo "[devcontainer] ✓ Server is ready and accessible at http://0.0.0.0:$PORT"
+fi
+
+exit 0

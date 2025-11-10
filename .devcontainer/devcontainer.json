@@ -1,0 +1,37 @@
+{
+  "name": "MCP Server Template",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "postCreateCommand": "bash .devcontainer/bootstrap.sh --non-interactive",
+
+  "forwardPorts": [8000],
+
+  "portsAttributes": {
+    "8000": {
+      "label": "MCP Server",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postStartCommand": "bash .devcontainer/postStart.sh && bash .devcontainer/expose-port.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false
+      }
+    }
+  },
+
+  "remoteEnv": {
+    "MCP_HTTP_HOST": "0.0.0.0",
+    "MCP_HTTP_PORT": "8000"
+  }
+}

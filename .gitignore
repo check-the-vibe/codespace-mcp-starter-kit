@@ -5,3 +5,11 @@ __pycache__/
 data/
 .DS_Store
 .venv
+
+# Runtime files
+server_http.log
+server_http.debug.log
+server_http.pid
+server.pid
+*.pid
+*.log

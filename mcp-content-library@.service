@@ -10,7 +10,6 @@ WorkingDirectory=/home/%i/mcp-content-library
 Environment="PATH=/home/%i/mcp-content-library/.venv/bin:/usr/local/bin:/usr/bin:/bin"
 Environment="MCP_HTTP_HOST=0.0.0.0"
 Environment="MCP_HTTP_PORT=8000"
-Environment="MCP_SNIPPETS_ROOT=/home/%i/.mcp_snippets"
 ExecStart=/home/%i/mcp-content-library/.venv/bin/python /home/%i/mcp-content-library/server_http.py
 Restart=always
 RestartSec=10

@@ -1,10 +1,10 @@
 {
   "name": "MCP Server Template",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "../Dockerfile"
   },
 
-  "postCreateCommand": "bash .devcontainer/bootstrap.sh --non-interactive",
+  "postCreateCommand": "bash ./bootstrap.sh --non-interactive",
 
   "forwardPorts": [8000],
 
@@ -15,7 +15,7 @@
     }
   },
 
-  "postStartCommand": "bash .devcontainer/postStart.sh && bash .devcontainer/expose-port.sh && bash .devcontainer/start-server.sh",
+  "postStartCommand": "bash ./postStart.sh && bash ./expose-port.sh && bash ./start-server.sh",
 
   "customizations": {
     "vscode": {

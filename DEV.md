@@ -1,4 +1,4 @@
-# Developing an MCP Server from the Template
+# Developing an MCP Server from the Template 
 
 This `mcp-server-template` directory provides a minimal, Codespaces-friendly
 starter for building new MCP servers. It uses the same stack as the
